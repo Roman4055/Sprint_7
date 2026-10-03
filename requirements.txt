@@ -1,5 +1,4 @@
+# requirements.txt
 pytest==8.3.2
 requests==2.32.3
-Faker==28.0.0
-python-dotenv==1.0.0
 allure-pytest==2.13.5
