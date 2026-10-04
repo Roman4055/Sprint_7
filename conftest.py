@@ -1,50 +1,74 @@
-#conftest.py
-import random
-import string
+# conftest.py
 import pytest
-from data import StaticData
-from helpers import create_and_login_courier, delete_courier
-
-def generate_random_string(length: int) -> str:
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for _ in range(length))
+import allure
+from generators import get_random_courier_payload
+from helpers import create_courier, login_courier, delete_courier
 
 
 @pytest.fixture
 def random_courier_payload():
     """Случайные данные для регистрации курьера."""
-    return {
-        "login": generate_random_string(10),
-        "password": generate_random_string(10),
-        "firstName": generate_random_string(10),
-    }
+    return get_random_courier_payload()
 
 
 @pytest.fixture
 def registered_courier():
-    """Создаёт курьера до теста и удаляет его после — независимо от результата теста."""
-    payload = {
-        "login": generate_random_string(10),
-        "password": generate_random_string(10),
-        "firstName": generate_random_string(10),
-    }
-    courier_id = create_and_login_courier(payload)
+    """Создаёт и логинит курьера до теста, удаляет после — независимо от результата теста."""
+    payload = get_random_courier_payload()
 
-    yield {"payload": payload, "courier_id": courier_id}
+    with allure.step("Фикстура: создаём курьера"):
+        response_create = create_courier(payload)
+        assert response_create.status_code == 201, (
+            f"Не удалось создать курьера. Статус: {response_create.status_code}. "
+            f"Ответ: {response_create.text}"
+        )
 
-    delete_courier(courier_id)
+    with allure.step("Фикстура: логинимся и получаем ID курьера"):
+        response_login = login_courier({"login": payload["login"], "password": payload["password"]})
+        assert response_login.status_code == 200, (
+            f"Не удалось залогиниться. Статус: {response_login.status_code}. "
+            f"Ответ: {response_login.text}"
+        )
+        courier_id = response_login.json().get("id")
+        assert courier_id is not None, (
+            f"В ответе на логин нет поля 'id'. Ответ: {response_login.text}"
+        )
+
+    yield {"payload": payload, "courier_id": str(courier_id)}
+
+    with allure.step(f"Фикстура: удаляем курьера с ID={courier_id}"):
+        delete_courier(str(courier_id))
 
 
-# Метод возвращающий логин и пароль статичного пользователя для тестов логина
 @pytest.fixture
-def get_log_pas():
-    
-    payload = {
-        "login": StaticData.LOGIN,
-        "password": StaticData.PASSWORD,
-    }
+def courier_factory():
+    """Фабрика курьеров: создаёт курьеров по запросу теста, удаляет всех созданных после."""
+    created = []
 
-    return payload
+    def _make_courier():
+        payload = get_random_courier_payload()
+        response_create = create_courier(payload)
+        assert response_create.status_code == 201, (
+            f"Не удалось создать курьера. Статус: {response_create.status_code}. "
+            f"Ответ: {response_create.text}"
+        )
+        response_login = login_courier({"login": payload["login"], "password": payload["password"]})
+        assert response_login.status_code == 200, (
+            f"Не удалось залогиниться. Статус: {response_login.status_code}. "
+            f"Ответ: {response_login.text}"
+        )
+        courier_id = response_login.json().get("id")
+        assert courier_id is not None, "В ответе на логин нет поля 'id'"
+
+        courier = {"payload": payload, "courier_id": str(courier_id)}
+        created.append(courier)
+        return courier
+
+    yield _make_courier
+
+    for courier in created:
+        delete_courier(courier["courier_id"])
+
 
 @pytest.fixture
 def base_order_payload():
@@ -57,4 +81,5 @@ def base_order_payload():
         "phone": "+7 800 355 35 35",
         "rentTime": 5,
         "deliveryDate": "2026-06-06",
-        "comment": "Saske, come back to Konoha",}
+        "comment": "Saske, come back to Konoha",
+    }

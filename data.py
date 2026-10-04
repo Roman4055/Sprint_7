@@ -59,6 +59,7 @@ class Cods:
 
     # создание заказа
     SUCCESSFUL_ORDER = 201
+    DOUBLE_COURIER = 409
 
     # Список заказов
     SUCCESSFUL_ORDER_LIST = 200     # Список закозов получен
