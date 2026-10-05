@@ -1,0 +1,6 @@
+Реальный URL запроса: https://qa-scooter.praktikum-services.ru/api/v1/orders?courierId=1000
+Status Code: 404
+Content-Type: application/json; charset=utf-8
+
+Тело ответа:
+{"code":404,"message":"Курьер с идентификатором 1000 не найден"}
