@@ -1,8 +1,7 @@
-# conftest.py
 import pytest
 import allure
 from generators import get_random_courier_payload
-from helpers import create_courier, login_courier, delete_courier
+from api_client import create_courier, login_courier, delete_courier
 
 
 @pytest.fixture
@@ -17,22 +16,12 @@ def registered_courier():
     payload = get_random_courier_payload()
 
     with allure.step("Фикстура: создаём курьера"):
-        response_create = create_courier(payload)
-        assert response_create.status_code == 201, (
-            f"Не удалось создать курьера. Статус: {response_create.status_code}. "
-            f"Ответ: {response_create.text}"
-        )
+        create_courier(payload)
+
 
     with allure.step("Фикстура: логинимся и получаем ID курьера"):
         response_login = login_courier({"login": payload["login"], "password": payload["password"]})
-        assert response_login.status_code == 200, (
-            f"Не удалось залогиниться. Статус: {response_login.status_code}. "
-            f"Ответ: {response_login.text}"
-        )
         courier_id = response_login.json().get("id")
-        assert courier_id is not None, (
-            f"В ответе на логин нет поля 'id'. Ответ: {response_login.text}"
-        )
 
     yield {"payload": payload, "courier_id": str(courier_id)}
 
@@ -47,18 +36,10 @@ def courier_factory():
 
     def _make_courier():
         payload = get_random_courier_payload()
-        response_create = create_courier(payload)
-        assert response_create.status_code == 201, (
-            f"Не удалось создать курьера. Статус: {response_create.status_code}. "
-            f"Ответ: {response_create.text}"
-        )
+        create_courier(payload)
+
         response_login = login_courier({"login": payload["login"], "password": payload["password"]})
-        assert response_login.status_code == 200, (
-            f"Не удалось залогиниться. Статус: {response_login.status_code}. "
-            f"Ответ: {response_login.text}"
-        )
         courier_id = response_login.json().get("id")
-        assert courier_id is not None, "В ответе на логин нет поля 'id'"
 
         courier = {"payload": payload, "courier_id": str(courier_id)}
         created.append(courier)

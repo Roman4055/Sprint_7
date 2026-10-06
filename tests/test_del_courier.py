@@ -1,7 +1,7 @@
 # test_del_courier.py
 
 import allure
-from helpers import delete_courier
+from api_client import delete_courier
 from data import Messages, Cods
 
 

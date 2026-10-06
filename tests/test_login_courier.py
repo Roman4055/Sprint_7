@@ -1,7 +1,7 @@
 # test_login_courier.py
 
 import allure
-from helpers import login_courier
+from api_client import login_courier
 from data import Cods, Messages
 
 

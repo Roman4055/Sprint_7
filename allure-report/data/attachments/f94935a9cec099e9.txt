@@ -1,6 +1,0 @@
-Реальный URL запроса: https://qa-scooter.praktikum-services.ru/api/v1/orders?courierId=814751&nearestStation=1&nearestStation=2
-Status Code: 500
-Content-Type: application/json; charset=utf-8
-
-Тело ответа:
-{"code":500,"message":"Unexpected token , in JSON at position 1"}

@@ -1,7 +1,7 @@
 # test_order_list.py
 import allure
 import pytest
-from helpers import get_orders_list
+from api_client import get_orders_list
 from data import StaticData
 
 

@@ -1,6 +1,0 @@
-Реальный URL запроса: https://qa-scooter.praktikum-services.ru/api/v1/orders?courierId=814751
-Status Code: 200
-Content-Type: application/json; charset=utf-8
-
-Тело ответа:
-{"orders":[],"pageInfo":{"page":0,"total":0,"limit":30},"availableStations":[]}

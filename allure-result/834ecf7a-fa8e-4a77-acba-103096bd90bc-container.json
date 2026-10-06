@@ -1,0 +1,1 @@
+{"uuid": "824fd1b8-6ae2-4dab-b51c-9954b547e2ed", "befores": [{"name": "allure_name", "status": "passed", "start": 1791310282639, "stop": 1791310282639}], "afters": [{"name": "allure_name::<lambda>", "start": 1791310296919}], "start": 1791310282639, "stop": 1791310296919}

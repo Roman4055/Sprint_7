@@ -1,7 +1,7 @@
 # test_order_creating.py
 import pytest
 import allure
-from helpers import create_order
+from api_client import create_order
 from data import Cods
 
 

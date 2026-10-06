@@ -1,6 +1,6 @@
 # test_creating_courier.py
 import allure
-from helpers import create_courier, login_courier
+from api_client import create_courier, login_courier
 from data import Cods, Messages
 
 
